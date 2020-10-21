@@ -26,6 +26,7 @@ function App() {
   const [colunaOrdenada, setColunaOrdenada] = React.useState("pontos");
   const [ordem, setOrdem] = React.useState("ascendente");
   const [dados, setDados] = React.useState([]);
+  const [rodadas, setRodadas] = React.useState([]);
 
   React.useEffect(() => {
     fetch(
@@ -35,6 +36,16 @@ function App() {
         return setDados(data.dados);
       });
     });
+  }, []);
+
+  React.useEffect(() => {
+    fetch("https://desafio-3-back-cubos-academy.herokuapp.com/jogos/1").then(
+      function (res) {
+        res.json().then(function (data) {
+          return setRodadas(data.dados);
+        });
+      }
+    );
   }, []);
 
   const dadosAscendentes = dados.sort((t1, t2) => {
@@ -92,18 +103,14 @@ function App() {
             </div>
             <div className="jogos">
               <ul className="jogo">
-                <li className="time1">Grêmio</li>
-                <li className="gol1">1</li>
-                <li>x</li>
-                <li className="gol2">1</li>
-                <li className="time2">São Paulo</li>
-              </ul>
-              <ul className="jogo">
-                <li className="time1">Grêmio</li>
-                <li className="gol1">1</li>
-                <li>x</li>
-                <li className="gol2">1</li>
-                <li className="time2">São Paulo</li>
+                {rodadas.map((rodada) => (
+                  <li>
+                    <span className="time1">{rodada.time_casa}</span>
+                    <span className="gol2">{rodada.gols_casa}</span>x
+                    <span className="gol2">{rodada.gols_visitante}</span>
+                    <span className="time2">{rodada.time_visitante}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

@@ -100,7 +100,7 @@ main {
 
 ul {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
 }
 
@@ -108,9 +108,16 @@ ul {
   list-style-type: none;
   margin-right: 2rem;
   font-size: 1.8rem;
+  margin-bottom: 2rem;
 }
+
 .jogo li:last-child {
   margin-right: 0;
+}
+
+.jogo span {
+  margin-right: 1rem;
+  margin-left: 1rem;
 }
 
 ul .gol1,
