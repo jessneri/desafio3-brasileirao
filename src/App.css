@@ -88,8 +88,11 @@ main {
   max-height: 6rem;
   background: rgb(138, 185, 157);
 }
+
 .titulo h1 {
   font-size: 3rem;
+  min-width: 200px;
+  text-align: center;
 }
 
 .titulo button {
@@ -98,31 +101,40 @@ main {
   margin: 0.5rem;
 }
 
-ul {
+.jogos {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+}
+
+.jogo {
+  margin-right: 2rem;
+  margin-left: 2rem;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-evenly;
+  min-width: 360px;
   align-items: center;
 }
 
-.jogo li {
-  list-style-type: none;
-  margin-right: 2rem;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-}
-
-.jogo li:last-child {
-  margin-right: 0;
-}
-
-.jogo span {
-  margin-right: 1rem;
-  margin-left: 1rem;
-}
-
-ul .gol1,
-ul .gol2 {
+tr .gol1,
+tr .gol2 {
   font-size: 2.4rem;
+}
+
+.jogo input {
+  max-width: 3rem;
+  margin-left: 0;
+}
+
+/*botão pra edição*/
+.btEditar {
+  border: none;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  background-color: #8ab99d;
+  padding: 0.2em;
 }
 
 /*tabela de times*/

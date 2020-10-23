@@ -27,29 +27,67 @@ function App() {
   const [ordem, setOrdem] = React.useState("ascendente");
   const [dados, setDados] = React.useState([]);
   const [rodadas, setRodadas] = React.useState([]);
+  const [rodada, setRodada] = React.useState(1);
+  const [editar, setEditar] = React.useState("clicado");
+
+  //estados autenticação
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [logado, setLogado] = React.useState();
+  const [token, setToken] = React.useState();
 
   React.useEffect(() => {
     fetch(
       "https://desafio-3-back-cubos-academy.herokuapp.com/classificacao"
     ).then(function (res) {
       res.json().then(function (data) {
+        console.log(data.dados);
         return setDados(data.dados);
       });
     });
   }, []);
 
   React.useEffect(() => {
-    fetch("https://desafio-3-back-cubos-academy.herokuapp.com/jogos/1").then(
-      function (res) {
-        res.json().then(function (data) {
-          return setRodadas(data.dados);
+    fetch(
+      `https://desafio-3-back-cubos-academy.herokuapp.com/jogos/${rodada}`
+    ).then(function (res) {
+      res.json().then(function (data) {
+        return setRodadas(data.dados);
+      });
+    });
+  }, [rodada]);
+
+  function fazerRequisicaoComBody(email, password) {
+    return fetch("https://desafio-3-back-cubos-academy.herokuapp.com/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (!email || !password) {
+      alert("Passe todas as informações!");
+      return;
+    }
+
+    if (logado) {
+      setLogado(false);
+    } else {
+      setLogado(true);
+      fazerRequisicaoComBody(email, password).then((res) => {
+        res.json().then((data) => {
+          setToken(data.dados.token);
         });
-      }
-    );
-  }, []);
+      });
+    }
+  }
 
   const dadosAscendentes = dados.sort((t1, t2) => {
-    //de onde eu vou pegar os dados para ordena-los?
     if (
       typeof t1[colunaOrdenada] === "number" &&
       typeof t2[colunaOrdenada] === "number"
@@ -61,57 +99,97 @@ function App() {
       return t1[colunaOrdenada].localeCompare(t2[colunaOrdenada]);
     }
   });
-
   const dadosOrdenados =
-    ordem === "descendente" ? dadosAscendentes.reverse() : dadosAscendentes;
+    ordem === "ascendente" ? dadosAscendentes : dadosAscendentes.reverse();
 
   return (
     <div className="App">
       <header>
         <div className="header-centro">
           <h1>Brasileirão</h1>
-          <form className="login">
-            <label>
-              Email:
-              <input type="email"></input>
-            </label>
-            <label>
-              Senha:
-              <input type="password"></input>
-            </label>
-            <button>Logar</button>
+          <form className="login" onSubmit={handleSubmit}>
+            {!logado ? (
+              <>
+                <label>
+                  Email:
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)} //pega o valor do email
+                  ></input>
+                </label>
+                <label>
+                  Senha:
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} //pega o valor da senha
+                  ></input>
+                </label>
+                <button type="submit">Logar</button>
+              </>
+            ) : (
+              <button type="submit">Deslogar</button>
+            )}
           </form>
         </div>
       </header>
       <main>
         <div className="centro">
           <div className="tabelaDeRodadas">
-            <div className="titulo">
-              <button>
-                <img
-                  src="https://systemuicons.com/images/icons/arrow_left.svg"
-                  alt="button"
-                ></img>
-              </button>
-              <h1>1ª rodada</h1>
-              <button>
-                <img
-                  src="https://systemuicons.com/images/icons/arrow_right.svg"
-                  alt="button"
-                ></img>
-              </button>
-            </div>
-            <div className="jogos">
-              <ul className="jogo">
-                {rodadas.map((rodada) => (
-                  <li>
-                    <span className="time1">{rodada.time_casa}</span>
-                    <span className="gol2">{rodada.gols_casa}</span>x
-                    <span className="gol2">{rodada.gols_visitante}</span>
-                    <span className="time2">{rodada.time_visitante}</span>
-                  </li>
-                ))}
-              </ul>
+            <div>
+              <div className="titulo">
+                <button
+                  onClick={() => {
+                    if (rodada > 1) {
+                      setRodada(rodada - 1);
+                    }
+                  }}
+                >
+                  <img
+                    src="https://systemuicons.com/images/icons/arrow_left.svg"
+                    alt="button"
+                  ></img>
+                </button>
+                <h1>{rodada}ª rodada</h1>
+                <button
+                  onClick={() => {
+                    if (rodada < 38) {
+                      setRodada(rodada + 1);
+                    }
+                  }}
+                >
+                  <img
+                    src="https://systemuicons.com/images/icons/arrow_right.svg"
+                    alt="button"
+                  ></img>
+                </button>
+              </div>
+              {rodadas.map((rodada) =>
+                !logado ? (
+                  <tr className="jogo">
+                    <td className="time1">{rodada.time_casa}</td>
+                    <td className="gol1">{rodada.gols_casa}</td>
+                    <td>x</td>
+                    <td className="gol2">{rodada.gols_visitante}</td>
+                    <td className="time2">{rodada.time_visitante}</td>
+                  </tr>
+                ) : (
+                  <tr className="jogo">
+                    <td className="time1">{rodada.time_casa}</td>
+                    <td className="gol1">{rodada.gols_casa}</td>
+                    <td>x</td>
+                    <td className="gol2">{rodada.gols_visitante}</td>
+                    <td className="time2">{rodada.time_visitante}</td>
+                    <button className="btEditar">
+                      <img
+                        src="https://systemuicons.com/images/icons/pen.svg"
+                        alt="button"
+                      ></img>
+                    </button>
+                  </tr>
+                )
+              )}
             </div>
           </div>
           <div className="tabelaDeTimes">
@@ -121,14 +199,14 @@ function App() {
                   <th>Posição</th>
                   {colunas.map((coluna) => (
                     <th>
-                      {legenda[coluna]}{" "}
+                      {legenda[coluna]}
                       <button
                         onClick={() => {
                           if (colunaOrdenada === coluna) {
                             setOrdem((ordem) =>
                               ordem === "descendente"
-                                ? "descendente"
-                                : "ascendente"
+                                ? "ascendente"
+                                : "descendente"
                             );
                           } else {
                             setColunaOrdenada(coluna);
