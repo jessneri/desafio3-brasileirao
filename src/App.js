@@ -28,7 +28,10 @@ function App() {
   const [dados, setDados] = React.useState([]);
   const [rodadas, setRodadas] = React.useState([]);
   const [rodada, setRodada] = React.useState(1);
-  const [editar, setEditar] = React.useState("clicado");
+  const [editar, setEditar] = React.useState(null);
+
+  const [golsCasa, setGolsCasa] = React.useState("");
+  const [golsVisitante, setGolsVisitante] = React.useState("");
 
   //estados autenticação
   const [email, setEmail] = React.useState("");
@@ -37,24 +40,11 @@ function App() {
   const [token, setToken] = React.useState();
 
   React.useEffect(() => {
-    fetch(
-      "https://desafio-3-back-cubos-academy.herokuapp.com/classificacao"
-    ).then(function (res) {
-      res.json().then(function (data) {
-        console.log(data.dados);
-        return setDados(data.dados);
-      });
-    });
+    buscarJogosClassificacao();
   }, []);
 
   React.useEffect(() => {
-    fetch(
-      `https://desafio-3-back-cubos-academy.herokuapp.com/jogos/${rodada}`
-    ).then(function (res) {
-      res.json().then(function (data) {
-        return setRodadas(data.dados);
-      });
-    });
+    buscarJogosRodada();
   }, [rodada]);
 
   function fazerRequisicaoComBody(email, password) {
@@ -68,6 +58,42 @@ function App() {
     });
   }
 
+  function buscarJogosClassificacao() {
+    fetch(
+      "https://desafio-3-back-cubos-academy.herokuapp.com/classificacao"
+    ).then(function (res) {
+      res.json().then(function (data) {
+        console.log(data.dados);
+        return setDados(data.dados);
+      });
+    });
+  }
+
+  function buscarJogosRodada() {
+    fetch(
+      `https://desafio-3-back-cubos-academy.herokuapp.com/jogos/${rodada}`
+    ).then(function (res) {
+      res.json().then(function (data) {
+        return setRodadas(data.dados);
+      });
+    });
+  }
+
+  function alterarJogo() {
+    return fetch("https://desafio-3-back-cubos-academy.herokuapp.com/jogos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token && `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: editar,
+        golsCasa: golsCasa,
+        golsVisitante: golsVisitante,
+      }),
+    });
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     if (!email || !password) {
@@ -77,11 +103,13 @@ function App() {
 
     if (logado) {
       setLogado(false);
+      setEmail("");
+      setPassword("");
     } else {
-      setLogado(true);
       fazerRequisicaoComBody(email, password).then((res) => {
         res.json().then((data) => {
           setToken(data.dados.token);
+          setLogado(true);
         });
       });
     }
@@ -126,10 +154,10 @@ function App() {
                     onChange={(e) => setPassword(e.target.value)} //pega o valor da senha
                   ></input>
                 </label>
-                <button type="submit">Logar</button>
+                <button type="submit">Login</button>
               </>
             ) : (
-              <button type="submit">Deslogar</button>
+              <button type="submit">Sair</button>
             )}
           </form>
         </div>
@@ -177,15 +205,60 @@ function App() {
                 ) : (
                   <tr className="jogo">
                     <td className="time1">{rodada.time_casa}</td>
-                    <td className="gol1">{rodada.gols_casa}</td>
+                    <td className="gol1">
+                      {editar === rodada.id ? (
+                        <input
+                          value={golsCasa}
+                          onChange={(event) => setGolsCasa(event.target.value)}
+                        ></input>
+                      ) : (
+                        rodada.gols_casa
+                      )}
+                    </td>
                     <td>x</td>
-                    <td className="gol2">{rodada.gols_visitante}</td>
+                    <td className="gol2">
+                      {editar === rodada.id ? (
+                        <input
+                          value={golsVisitante}
+                          onChange={(event) =>
+                            setGolsVisitante(event.target.value)
+                          }
+                        ></input>
+                      ) : (
+                        rodada.gols_visitante
+                      )}
+                    </td>
                     <td className="time2">{rodada.time_visitante}</td>
-                    <button className="btEditar">
-                      <img
-                        src="https://systemuicons.com/images/icons/pen.svg"
-                        alt="button"
-                      ></img>
+                    <button
+                      className="btEditar"
+                      onClick={() => {
+                        if (editar === rodada.id) {
+                          //altera os jogos na rodada e na classificação, depois faz a busca desses jogos
+                          alterarJogo().then(() => {
+                            buscarJogosRodada();
+                            buscarJogosClassificacao();
+                          });
+
+                          setEditar("");
+                          //mudança do api
+                        } else {
+                          setEditar(rodada.id);
+                          setGolsCasa(rodada.gols_casa);
+                          setGolsVisitante(rodada.gols_visitante);
+                        }
+                      }}
+                    >
+                      {editar === rodada.id ? (
+                        <img
+                          src="https://systemuicons.com/images/icons/check.svg"
+                          alt="button"
+                        ></img>
+                      ) : (
+                        <img
+                          src="https://systemuicons.com/images/icons/pen.svg"
+                          alt="button"
+                        ></img>
+                      )}
                     </button>
                   </tr>
                 )
