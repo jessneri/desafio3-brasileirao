@@ -240,7 +240,6 @@ function App() {
                           });
 
                           setEditar("");
-                          //mudança do api
                         } else {
                           setEditar(rodada.id);
                           setGolsCasa(rodada.gols_casa);

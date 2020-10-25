@@ -30,6 +30,8 @@ header {
   align-items: center;
   min-width: 1300px;
   height: 80px;
+  animation-name: appear;
+  animation-duration: 600ms;
 }
 h1 {
   font-size: 3.6rem;
@@ -79,6 +81,9 @@ main {
   flex-direction: column;
   background: white;
   min-width: 36rem;
+  animation-name: up;
+  animation-duration: 600ms;
+  animation-fill-mode: backwards;
 }
 .titulo {
   display: flex;
@@ -141,8 +146,13 @@ tr .gol2 {
 .tabelaDeTimes {
   margin-top: 4rem;
   display: flex;
+  max-height: 630px;
+
   flex-direction: column;
   background: white;
+  animation-name: up;
+  animation-duration: 600ms;
+  animation-fill-mode: backwards;
 }
 
 .titulosColunas h1 {
@@ -177,4 +187,33 @@ th {
 
 td {
   padding: 0.4rem;
+}
+tbody tr:nth-child(-n + 4) {
+  background: rgba(155, 194, 171, 0.548);
+}
+
+tbody tr:nth-last-child(-n + 4) {
+  background: rgba(194, 155, 155, 0.561);
+}
+
+/*animações*/
+
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
