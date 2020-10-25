@@ -3,7 +3,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Projeto de tabela do Campeonato Brasileiro, criado para a semana do Desafio 3 de Front-end do curso de Programação do Zero da Cubos Academy(@cubosacademy).
 
-![alt text](https://drive.google.com/file/d/1LvRgZNwHrFOHsKSUr2ET1e5BDZ1sESx3/view)
+https://drive.google.com/file/d/1LvRgZNwHrFOHsKSUr2ET1e5BDZ1sESx3/view
 
 ### Requisitos técnicos:
 Utilize React
