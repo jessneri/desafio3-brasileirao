@@ -130,6 +130,8 @@ tr .gol2 {
 .jogo input {
   max-width: 3rem;
   margin-left: 0;
+  border: 0.2rem solid #8ab99d;
+  text-align: center;
 }
 
 /*botão pra edição*/
